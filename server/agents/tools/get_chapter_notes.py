@@ -40,11 +40,11 @@ def load_chapter_notes():
 
 load_chapter_notes()
 
-for chapter_id, notes in CHAPTER_NOTES.items():
-    print(f"Chapter {chapter_id}:")
-    print(len(notes))
-    print(notes[:100])
-    print("\n")
+# for chapter_id, notes in CHAPTER_NOTES.items():
+#     print(f"Chapter {chapter_id}:")
+#     print(len(notes))
+#     print(notes[:100])
+#     print("\n")
 
 
 def get_chapter_ids():

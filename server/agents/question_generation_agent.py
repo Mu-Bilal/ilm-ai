@@ -8,97 +8,83 @@ from typing_extensions import TypeAlias
 
 from pydantic_ai import Agent, ModelRetry, RunContext, format_as_xml
 
+from tools import get_user_mastery, get_data_from_topic
+
+import logfire
+
+logfire.configure()
+
 """
     This agent is responsible for generating questions from the course data.
-
-    The inputs to this agent are the entire course data.
-    The input should include a table of contents, the contents of each chapter, 
-    and sample questions and/or answers for each chapter.
-
-    The output should be a list of questions for each chapter. 
-    The number of questions should be adjustable based on input, but will be set to 10 by default.
 """
 
 @dataclass
-class QGenDeps:  
+class Deps:  
     course_id: str
+    user_id: str
+    total_questions: int = Field(default=10)
 
-    
 @dataclass
 class MCQ(BaseModel):
     """
-    A multiple choice question.
+    A multiple choice question where the question key is the question for the user to solve, the choices key is a list answer choices, and the answer key is the index of the correct answer.
     """
     question: str
     choices: Annotated[List[str], MinLen(2), MaxLen(5)]
     answer: int
 
+
 @dataclass
 class TextQuestion(BaseModel):
     """
-    A text question.
+    A text question where the question key is the question for the user to solve, and the answer key is the model answer to the question.
     """
     question: str
     answer: str
 
 
 Question = Union[MCQ, TextQuestion]
+Result = Annotated[List[Question], MinLen(1)]
 
 
-class ChapterData(BaseModel):
-    """
-    The chapter data for the given chapter id.
-    """
-    chapter_id: str
-    content: str
-    sample_questions: Optional[List[Question]]
-    
-
-class CourseData(BaseModel):
-    """
-    The course data for the given course id.
-    """
-    course_id: str
-    chapters: List[ChapterData]
-
-
-class QGenOutput(BaseModel):
-    """
-    The output of the question generation agent for each chapter
-    """
-    course_id: str
-    chapter_id: str
-    questions: List[Question]
-
-
-qgen_agent = Agent(  
-    'google-gla:gemini-1.5-flash',
-    system_prompt='You are a question generation agent.',
-    deps_type=QGenDeps,
-    output_type=QGenOutput
+agent = Agent(  
+    'google-gla:gemini-2.0-flash',
+    deps_type=Deps,
+    output_type=Result,
+    tools=[
+        get_user_mastery,
+        get_data_from_topic,
+    ],
+    instrument=True
 )
 
 
-@qgen_agent.system_prompt  
-async def add_course_name(ctx: RunContext[QGenDeps]) -> str:
-    return f"The course's name is {ctx.deps.course_id!r}"
-
-
-@qgen_agent.tool
-async def fetch_course_chapters(ctx: RunContext[QGenDeps],) -> CourseData:
+@agent.system_prompt
+async def add_system_prompt() -> str:
+    prompt = f"""
+    You are a teacher who is responsible for generating questions for courses.
+    Using this course name, fetch the chapters with their notes, as well as your student's mastery notes.
+    These notes will give you scores on how well the student has mastered each chapter, along with notes on what the student needs to work on 
+    in each chapter.
+    Based on these notes, you will need to plan out how many questions to generate for each chapter.
+    Create a mix of multiple choice and text questions, and allocate more questions to the chapters that the student is weaker at.
+    You will then need to fetch the data for the most important topics in each chapter from a vector database.
+    Finally, using the mastery notes, chapter notes, and the topic data, you will generate questions.
     """
-    Fetch the course data for the given course id.
-    """
-    return CourseData.from_course_id(ctx.deps.course_id)
+    return prompt
 
 
-@qgen_agent.tool
-async def fetch_chapter_data(ctx: RunContext[QGenDeps], chapter_id: str) -> ChapterData:
-    """
-    Fetch the chapter data for the given chapter id.
-    """
-    return ChapterData.from_chapter_id(ctx.deps.course_id, chapter_id)
+def generate_questions(user_id: str, course_id: str, total_questions: int):
+    deps = Deps(user_id=user_id, course_id=course_id, total_questions=total_questions)
+    result = agent.run_sync(
+        f"Generate {deps.total_questions} questions for the {deps.course_id} course.", 
+        deps=deps, 
+        output_type=Result)
+
+    debug(result.output)
+
+    return result.output
 
 
-result = qgen_agent.run_sync('Generate 10 total questions on simple mathematic arithmetics.', deps=QGenDeps(course_id='math-101'))  
-debug(result.output)
+if __name__ == "__main__":
+    print(generate_questions('1', 'Deep Learning', 10))

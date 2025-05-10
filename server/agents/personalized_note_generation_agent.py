@@ -4,7 +4,7 @@ from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
-from tools import get_user_mastery, get_chapter_notes
+from tools import get_user_mastery_for_chapter, get_chapter_notes
 
 import logfire
 
@@ -22,7 +22,7 @@ ollama_model = OpenAIModel(
     model_name='qwen3:4b', 
     provider=OpenAIProvider(base_url='http://localhost:11434/v1'),
 )
-agent = Agent(ollama_model, output_type=str, tools=[get_user_mastery, get_chapter_notes], deps_type=Deps)
+agent = Agent(ollama_model, output_type=str, tools=[get, get_chapter_notes], deps_type=Deps)
 
 Agent.instrument_all()
 

@@ -25,18 +25,13 @@ client = MilvusClient(
 )
 
 
-@dataclass
-class Deps:
-    topic: str
-    mastery_notes: str
+def _clean_text(text: str) -> str:
+    return text.replace("search_document: ", "").strip()
 
-async def get_data_from_topic(ctx: RunContext[Deps]) -> str:
+async def get_data_from_topic(topic: str, mastery_notes: str) -> str:
     """
     Call this function to get the notes for a chapter.
     """
-    topic = ctx.deps.topic
-    mastery_notes = ctx.deps.mastery_notes
-
     query_vectors = model.encode(f"search_query: {topic} taking into account the following notes: {mastery_notes}")
 
     debug(query_vectors)
@@ -49,9 +44,9 @@ async def get_data_from_topic(ctx: RunContext[Deps]) -> str:
         output_fields=["text"]
     )
 
-    debug(res)
+    output = [{'distance': hit['distance'], 'text': _clean_text(hit['entity']['text'])} for hit in res[0]]
 
-    output = [{'distance': hit['distance'], 'text': hit['entity']['text']} for hit in res[0]]
+    debug(output)
 
     return output
 
