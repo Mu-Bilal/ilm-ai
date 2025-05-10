@@ -6,17 +6,20 @@ from devtools import debug
 from pydantic import BaseModel, Field
 from typing_extensions import TypeAlias
 
-from pydantic_ai import Agent, ModelRetry, RunContext, format_as_xml
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.providers.openai import OpenAIProvider
 
 from tools import get_user_mastery, get_data_from_topic
 
 import logfire
 
-logfire.configure()
-
 """
     This agent is responsible for generating questions from the course data.
 """
+
+logfire.configure()
+
 
 @dataclass
 class Deps:  
@@ -47,8 +50,14 @@ Question = Union[MCQ, TextQuestion]
 Result = Annotated[List[Question], MinLen(1)]
 
 
+ollama_model = OpenAIModel(
+    model_name='qwen3:4b', 
+    provider=OpenAIProvider(base_url='http://localhost:11434/v1'),
+)
+
+
 agent = Agent(  
-    'google-gla:gemini-2.0-flash',
+    ollama_model,
     deps_type=Deps,
     output_type=Result,
     tools=[
