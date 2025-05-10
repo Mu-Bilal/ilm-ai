@@ -3,6 +3,12 @@ from collections import defaultdict
 
 from pydantic_ai import RunContext
 
+import os
+
+# Get directory of current file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Navigate to the main.md file
+main_md_path = os.path.join(current_dir, "..", "main.md")
 
 @dataclass
 class Deps:
@@ -15,7 +21,7 @@ CHAPTER_NOTES = {}
 
 def load_chapter_notes():
     chapter_id = None
-    with open("server/agents/main.md", "r") as f:
+    with open(main_md_path, "r") as f:
         for line in f:
             if line.startswith("### *"):
                 chapter_id = line.strip().replace("### ", "").replace("*", "")

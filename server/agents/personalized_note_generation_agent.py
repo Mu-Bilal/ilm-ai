@@ -1,9 +1,4 @@
-#!/usr/bin/env python3
-
 from dataclasses import dataclass
-
-import asyncpg
-from pydantic import BaseModel
 
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
