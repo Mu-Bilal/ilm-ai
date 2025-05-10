@@ -1,3 +1,7 @@
+# Data
+data/*
+!data/README.md
+
 # Dependencies
 node_modules/
 .pnp
