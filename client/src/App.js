@@ -16,6 +16,8 @@ import QuizView from './views/QuizView';
 function App() {
   const [currentView, setCurrentView] = useState('dashboard'); // dashboard, addCourse, courseView, topicView, quizMode
   const [courses, setCourses] = useState(initialCourses);
+  console.log('App initialCourses:', initialCourses); // Debug log
+  console.log('App courses state:', courses); // Debug log
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [quizType, setQuizType] = useState(''); // 'personalized', 'flash', 'test'

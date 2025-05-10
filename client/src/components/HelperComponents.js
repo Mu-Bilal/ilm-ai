@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const ProgressBar = ({ progress, size = 'h-2.5', color = 'bg-blue-600' }) => (
-  <div className={`w-full bg-gray-200 rounded-full ${size} dark:bg-gray-700`}>
+  <div className={`w-full bg-red-200 rounded-full ${size} dark:bg-red-700`}>
     <div className={`${color} ${size} rounded-full`} style={{ width: `${progress}%` }}></div>
   </div>
 );

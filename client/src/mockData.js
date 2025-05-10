@@ -35,7 +35,7 @@ export const initialCourses = [
       },
     ],
     color: 'bg-blue-500',
-    icon: <Brain className="w-8 h-8 text-blue-100" />
+    icon: <Brain className="w-8 h-8 text-blue-300" />
   },
   {
     id: 'math202',
@@ -59,7 +59,7 @@ export const initialCourses = [
       },
     ],
     color: 'bg-green-500',
-    icon: <ListChecks className="w-8 h-8 text-green-100" />
+    icon: <ListChecks className="w-8 h-8 text-green-300" />
   },
 ];
 
