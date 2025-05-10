@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, ArrowLeft } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import { Card, Button } from '../components/HelperComponents';
 
 const QuizView = ({ 
@@ -14,7 +14,8 @@ const QuizView = ({
   courseName, 
   topicName,
   currentQuestionIndex,
-  totalQuestions
+  totalQuestions,
+  isAnswerCorrect
 }) => {
   const getQuizTitle = () => {
     let title = '';
@@ -52,16 +53,31 @@ const QuizView = ({
             <h4 className="font-semibold text-gray-700 dark:text-gray-300">Your Answer:</h4>
             <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">{userAnswer || "(No answer provided)"}</p>
           </div>
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
-            <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-1">Explanation:</h4>
-            <p className="text-blue-600 dark:text-blue-300">{question.explanation}</p>
+          <div className={`p-4 ${isAnswerCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'} border rounded-lg`}>
+            <div className="flex items-center gap-2 mb-2">
+              {isAnswerCorrect ? (
+                <CheckCircle className="w-5 h-5 text-green-500" />
+              ) : (
+                <XCircle className="w-5 h-5 text-red-500" />
+              )}
+              <h4 className={`font-semibold ${isAnswerCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                {isAnswerCorrect ? 'Correct!' : 'Not quite right'}
+              </h4>
+            </div>
+            <p className={`${isAnswerCorrect ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}`}>
+              {question.explanation}
+            </p>
             {question.type === 'test' && topicName && (
-                <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">
-                    (Related to: <a href="#" className="underline">{topicName} course materials</a>)
-                </p>
+              <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">
+                (Related to: <a href="#" className="underline">{topicName} course materials</a>)
+              </p>
             )}
           </div>
-          <Button onClick={onNextQuestion} icon={isLastQuestion ? CheckCircle : ArrowLeft} className="w-full bg-green-500 hover:bg-green-600">
+          <Button 
+            onClick={onNextQuestion} 
+            icon={isLastQuestion ? CheckCircle : ArrowLeft} 
+            className={`w-full ${isAnswerCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'}`}
+          >
             {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
           </Button>
         </div>
