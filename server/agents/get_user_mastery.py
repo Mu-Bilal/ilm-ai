@@ -15,11 +15,11 @@ async def get_user_mastery(ctx: RunContext[Deps]) -> str:
     course_id = ctx.deps.course_id
     chapter_id = ctx.deps.chapter_id
     return {
-        "chapter_1": {
-            "mastery": 0.7,
-            "notes": "The user does not understand normalization layers well.",
+        "1 Fundamentals": {
+            "mastery": 0.9,
+            "notes": "The user understands most concepts from this chapter well, except for directed graphical models.",
         },
-        "chapter_2": {
+        "2 Bayesian Linear Regression": {
             "mastery": 0.5,
             "notes": "The user does not understand the difference between a Pydantic model and a Pydantic BaseModel.",
         },

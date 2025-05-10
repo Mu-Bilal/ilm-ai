@@ -1,11 +1,53 @@
 from dataclasses import dataclass
+from collections import defaultdict
 
 from pydantic_ai import RunContext
+
 
 @dataclass
 class Deps:
     course_id: str
     chapter_id: str
+
+
+CHAPTER_NOTES = {}
+
+
+def load_chapter_notes():
+    chapter_id = None
+    with open("server/agents/main.md", "r") as f:
+        for line in f:
+            if line.startswith("### *"):
+                chapter_id = line.strip().replace("### ", "").replace("*", "")
+                if chapter_id[0] not in "0123456789":
+                    chapter_id = None
+            else:
+                line = line.strip()
+                if chapter_id:
+                    if chapter_id not in CHAPTER_NOTES:
+                        CHAPTER_NOTES[chapter_id] = []
+                    CHAPTER_NOTES[chapter_id].append(line)
+    
+    for chapter_id, notes in CHAPTER_NOTES.items():
+        CHAPTER_NOTES[chapter_id] = "\n".join(notes)
+    
+
+load_chapter_notes()
+
+for chapter_id, notes in CHAPTER_NOTES.items():
+    print(f"Chapter {chapter_id}:")
+    print(len(notes))
+    print(notes[:100])
+    print("\n")
+
+
+def get_chapter_ids():
+    return list(CHAPTER_NOTES.keys())
+
+
+def get_chapter_notes_sync(course_id: str, chapter_id: str) -> str:
+    return CHAPTER_NOTES[chapter_id]
+
 
 async def get_chapter_notes(ctx: RunContext[Deps]) -> str:
     """
@@ -13,36 +55,12 @@ async def get_chapter_notes(ctx: RunContext[Deps]) -> str:
     """
     course_id = ctx.deps.course_id
     chapter_id = ctx.deps.chapter_id
-    return {
-        "chapter_1": {
-            "notes": """Deep learning is a subset of machine learning that uses artificial neural networks 
-            with multiple layers to progressively extract higher-level features from raw input. These neural 
-            networks are inspired by the biological neural networks in human brains. Deep learning has achieved 
-            remarkable success in various tasks like computer vision, natural language processing, and speech recognition.
+    to_return = get_chapter_notes_sync(course_id, chapter_id)
+    print(course_id, chapter_id)
+    print("Returning string of length", len(to_return))
+    return to_return
 
-            Normalization layers play a crucial role in deep neural networks by standardizing the inputs to each layer. 
-            The most common types are:
-            - Batch Normalization: Normalizes the output of a previous activation layer by subtracting the batch mean 
-              and dividing by the batch standard deviation
-            - Layer Normalization: Similar to batch norm but normalizes across the features instead of the batch
-            - Instance Normalization: Normalizes across the spatial dimensions only
-            
-            These layers help combat internal covariate shift and allow for faster training of deep networks.""",
-        },
-        "chapter_2": {
-            "notes": """Data classes are a feature in Python that automatically adds generated special methods 
-            such as __init__() and __repr__() to user-defined classes. They help reduce boilerplate code when 
-            creating classes that primarily store data. Key features include:
-            - Automatic generation of __init__, __repr__, __eq__ methods
-            - Support for default values
-            - Type annotations
-            - Immutable instances using @dataclass(frozen=True)
 
-            Pydantic models are a specific implementation of data validation using Python type annotations. They:
-            - Enforce type hints at runtime
-            - Provide automatic data validation
-            - Support complex data structures
-            - Handle data parsing and serialization
-            - Integrate well with FastAPI and other modern Python frameworks""",
-        },
-    }[chapter_id]
+if __name__ == "__main__":
+    print(get_chapter_ids())
+    print(get_chapter_notes_sync(get_chapter_ids()[0], get_chapter_ids()[0]))
