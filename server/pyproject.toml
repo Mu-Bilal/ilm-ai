@@ -5,6 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aiohttp>=3.11.18",
+    "beautifulsoup4>=4.13.4",
     "devtools>=0.12.2",
-    "pydantic-ai>=0.1.11",
+    "einops>=0.8.1",
+    "fastapi>=0.115.12",
+    "numpy<2",
+    "pydantic-ai[logfire]>=0.1.11",
+    "pymilvus>=2.5.3",
+    "python-dotenv>=1.1.0",
+    "python-multipart>=0.0.20",
+    "requests>=2.32.3",
+    "sentence-transformers>=4.1.0",
+    "torch==2.2.2",
 ]
+
+# we also need to install torch separately using "uv pip install torch".
