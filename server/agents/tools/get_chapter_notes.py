@@ -15,7 +15,7 @@ CHAPTER_NOTES = {}
 
 def load_chapter_notes():
     chapter_id = None
-    with open("server/agents/main.md", "r") as f:
+    with open("agents/main.md", "r") as f:
         for line in f:
             if line.startswith("### *"):
                 chapter_id = line.strip().replace("### ", "").replace("*", "")
@@ -34,11 +34,11 @@ def load_chapter_notes():
 
 load_chapter_notes()
 
-for chapter_id, notes in CHAPTER_NOTES.items():
-    print(f"Chapter {chapter_id}:")
-    print(len(notes))
-    print(notes[:100])
-    print("\n")
+# for chapter_id, notes in CHAPTER_NOTES.items():
+#     print(f"Chapter {chapter_id}:")
+#     print(len(notes))
+#     print(notes[:100])
+#     print("\n")
 
 
 def get_chapter_ids():
@@ -63,4 +63,4 @@ async def get_chapter_notes(ctx: RunContext[Deps]) -> str:
 
 if __name__ == "__main__":
     print(get_chapter_ids())
-    print(get_chapter_notes_sync(get_chapter_ids()[0], get_chapter_ids()[0]))
+    # print(get_chapter_notes_sync(get_chapter_ids()[0], get_chapter_ids()[0]))

@@ -2,18 +2,17 @@
 
 from dataclasses import dataclass
 
-import asyncpg
 from pydantic import BaseModel
 
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
-from tools import get_user_mastery, get_chapter_notes
+from agents.tools import get_user_mastery, get_chapter_notes
 
-import logfire
+# import logfire
 
-logfire.configure()
+# logfire.configure()
 
 @dataclass
 class Deps:
@@ -29,23 +28,44 @@ ollama_model = OpenAIModel(
 )
 agent = Agent(ollama_model, output_type=str, tools=[get_user_mastery, get_chapter_notes], deps_type=Deps)
 
-Agent.instrument_all()
+# Agent.instrument_all()
 
-# Test with a simple query
-result = agent.run_sync("""Give personalized notes. First get user mastery to
-understand what specific content the user would benefit from learning at this
-time (based on their mastery and shortcomings), and then get chapter notes.
-Generate good summary of the notes that would be useful to this user in
-particular. Focus on making the notes cover just the things the user struggles with.""", deps=Deps(user_id='1', course_id='pai', chapter_id='1 Fundamentals'))
+async def getNotes(user_id: str, course_id: str, chapter_id: str):
+    """
+    Generate personalized notes for a user based on their mastery level and chapter content.
+    
+    Args:
+        user_id: The ID of the user
+        course_id: The ID of the course
+        chapter_id: The ID of the chapter
+        
+    Returns:
+        str: Personalized notes for the chapter
+    """
+    try:
+        # Run the agent to generate personalized notes
+        result = await agent.run(
+            """Generate personalized notes for the user. First get user mastery to
+            understand what specific content the user would benefit from learning at this
+            time (based on their mastery and shortcomings), and then get chapter notes.
+            Generate a good summary of the notes that would be useful to this user in
+            particular. Focus on making the notes cover just the things the user struggles with.
+            Format the output as markdown with clear sections and bullet points.""",
+            deps=Deps(user_id=user_id, course_id=course_id, chapter_id=chapter_id)
+        )
+        return result.output
+    except Exception as e:
+        print(f"Error in getNotes: {str(e)}")
+        raise
 
-print("\n=== Structured Output ===")
-print(f"Notes: {result.output}")
-print("=======================\n")
+    # print("\n=== Structured Output ===")
+    # print(f"Notes: {result.output}")
+    # print("=======================\n")
 
-print("\n=== Usage Statistics ===")
-print(result.usage())
-print("=======================\n")
+    # print("\n=== Usage Statistics ===")
+    # print(result.usage())
+    # print("=======================\n")
 
-print("\n=== All Messages ===")
-print(result.all_messages())
-print("=======================\n")
+    # print("\n=== All Messages ===")
+    # print(result.all_messages())
+    # print("=======================\n")
