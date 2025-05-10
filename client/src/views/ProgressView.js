@@ -3,11 +3,21 @@ import { BarChart3, Target, Brain } from 'lucide-react';
 import { Card, ProgressBar } from '../components/HelperComponents';
 
 const ProgressView = ({ course }) => {
-  // Calculate topic dependencies and relationships
-  const topicDependencies = {
-    'topic1_1': [], // Introduction to Probability has no dependencies
-    'topic1_2': ['topic1_1'], // Bayesian Networks depends on Introduction to Probability
-    'topic1_3': ['topic1_1', 'topic1_2'], // Hidden Markov Models depends on both previous topics
+  // Hardcoded progress values for topics
+  const topicProgress = {
+    '1 Fundamentals': 85,
+    '2 Bayesian Linear Regression': 65,
+    '3 Kalman Filters': 75,
+    '4 Gaussian Processes': 70,
+    '5 Variational Inference': 60,
+    '6 Markov Chain Monte Carlo Methods': 55,
+    '7 Bayesian Deep Learning': 50,
+    '8 Active Learning': 65,
+    '9 Bayesian Optimization': 70,
+    '10 Markov Decision Processes': 60,
+    '11 Tabular Reinforcement Learning': 55,
+    '12 Model-free Approximate Reinforcement Learning': 50,
+    '13 Model-based Approximate Reinforcement Learning': 45
   };
 
   // Calculate mastery levels
@@ -16,6 +26,11 @@ const ProgressView = ({ course }) => {
     if (progress >= 70) return { level: 'Proficient', color: 'text-blue-500' };
     if (progress >= 40) return { level: 'Developing', color: 'text-yellow-500' };
     return { level: 'Beginner', color: 'text-red-500' };
+  };
+
+  // Get progress for a topic
+  const getTopicProgress = (topicName) => {
+    return topicProgress[topicName] || 0;
   };
 
   return (
@@ -46,7 +61,8 @@ const ProgressView = ({ course }) => {
             <h3 className="text-lg font-semibold mb-3">Topic Mastery</h3>
             <div className="space-y-4">
               {course.topics.map(topic => {
-                const mastery = getMasteryLevel(topic.progress);
+                const progress = getTopicProgress(topic.name);
+                const mastery = getMasteryLevel(progress);
                 return (
                   <div key={topic.id} className="flex items-center gap-3">
                     <div className="w-16 text-right">
@@ -55,9 +71,9 @@ const ProgressView = ({ course }) => {
                     <div className="flex-1">
                       <div className="flex justify-between text-sm mb-1">
                         <span>{topic.name}</span>
-                        <span>{topic.progress}%</span>
+                        <span>{progress}%</span>
                       </div>
-                      <ProgressBar progress={topic.progress} size="h-2" color={`bg-${mastery.color.split('-')[1]}-500`} />
+                      <ProgressBar progress={progress} size="h-2" color={`bg-${mastery.color.split('-')[1]}-500`} />
                     </div>
                   </div>
                 );
@@ -73,28 +89,26 @@ const ProgressView = ({ course }) => {
         <div className="relative h-64 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="grid grid-cols-3 gap-8">
-              {course.topics.map((topic, index) => (
-                <div key={topic.id} className="relative">
-                  <div className={`p-4 rounded-lg ${index === 0 ? 'bg-green-100 dark:bg-green-900' : index === 1 ? 'bg-blue-100 dark:bg-blue-900' : 'bg-purple-100 dark:bg-purple-900'}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Brain className="w-5 h-5" />
-                      <span className="font-medium">{topic.name}</span>
-                    </div>
-                    <div className="text-sm">
-                      <div className="flex justify-between">
-                        <span>Progress:</span>
-                        <span>{topic.progress}%</span>
+              {course.topics.map((topic, index) => {
+                const progress = getTopicProgress(topic.name);
+                return (
+                  <div key={topic.id} className="relative">
+                    <div className={`p-4 rounded-lg ${index === 0 ? 'bg-green-100 dark:bg-green-900' : index === 1 ? 'bg-blue-100 dark:bg-blue-900' : 'bg-purple-100 dark:bg-purple-900'}`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className="w-5 h-5" />
+                        <span className="font-medium">{topic.name}</span>
                       </div>
-                      <ProgressBar progress={topic.progress} size="h-1.5" color={`bg-${index === 0 ? 'green' : index === 1 ? 'blue' : 'purple'}-500`} />
+                      <div className="text-sm">
+                        <div className="flex justify-between">
+                          <span>Progress:</span>
+                          <span>{progress}%</span>
+                        </div>
+                        <ProgressBar progress={progress} size="h-1.5" color={`bg-${index === 0 ? 'green' : index === 1 ? 'blue' : 'purple'}-500`} />
+                      </div>
                     </div>
                   </div>
-                  {topicDependencies[topic.id]?.length > 0 && (
-                    <div className="absolute -left-4 top-1/2 transform -translate-y-1/2">
-                      <div className="w-4 h-0.5 bg-gray-400"></div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -105,7 +119,8 @@ const ProgressView = ({ course }) => {
         <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
         <div className="space-y-4">
           {course.topics.map(topic => {
-            const mastery = getMasteryLevel(topic.progress);
+            const progress = getTopicProgress(topic.name);
+            const mastery = getMasteryLevel(progress);
             if (mastery.level !== 'Mastered') {
               return (
                 <div key={topic.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
