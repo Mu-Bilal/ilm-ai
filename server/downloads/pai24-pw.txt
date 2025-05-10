@@ -1,0 +1,6 @@
+<html>
+<body>
+<h1 align="center"> This resource is accessible only from ETH network.</h1>
+<h2 align="center"> Please use VPN to connect to ETH.</h1>
+</body>
+</html>
