@@ -8,8 +8,9 @@ from pydantic import BaseModel
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
-from get_user_mastery import get_user_mastery
-from get_chapter_notes import get_chapter_notes, get_chapter_ids
+
+from tools import get_user_mastery, get_chapter_notes
+
 import logfire
 
 logfire.configure()
