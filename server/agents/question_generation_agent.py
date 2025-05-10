@@ -68,25 +68,29 @@ agent = Agent(
 )
 
 
-@agent.system_prompt
-async def add_system_prompt() -> str:
-    prompt = f"""
-    You are a teacher who is responsible for generating questions for courses.
-    Using this course name, fetch the chapters with their notes, as well as your student's mastery notes.
-    These notes will give you scores on how well the student has mastered each chapter, along with notes on what the student needs to work on 
-    in each chapter.
-    Based on these notes, you will need to plan out how many questions to generate for each chapter.
-    Create a mix of multiple choice and text questions, and allocate more questions to the chapters that the student is weaker at.
-    You will then need to fetch the data for the most important topics in each chapter from a vector database.
-    Finally, using the mastery notes, chapter notes, and the topic data, you will generate questions.
-    """
-    return prompt
-
-
 def generate_questions(user_id: str, course_id: str, total_questions: int):
+    """
+    Generate questions for a user based on their mastery level and chapter content.
+    
+    Args:
+        user_id: The ID of the user
+        course_id: The ID of the course
+        total_questions: The total number of questions to generate
+
+    Returns:
+        List[Question]: A list of questions
+    """
+    
+    prompt = f"""
+        Generate questions for the {course_id} course. First
+        get user mastery to understand what specific content the user would benefit practicing.
+        Then, search for relevant content in the course to generate questions on, using multiple 
+        related query terms. Generate {total_questions} questions, with a mix of multiple 
+        choice and text questions. Focus on the topics that the user is weaker at.
+        """
     deps = Deps(user_id=user_id, course_id=course_id, total_questions=total_questions)
     result = agent.run_sync(
-        f"Generate {deps.total_questions} questions for the {deps.course_id} course.", 
+        prompt,
         deps=deps, 
         output_type=Result)
 

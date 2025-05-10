@@ -30,7 +30,7 @@ def _clean_text(text: str) -> str:
 
 async def get_data_from_topic(topic: str, mastery_notes: str) -> str:
     """
-    Call this function to get the notes for a chapter.
+    Call this function to get the notes for a topic.
     """
     query_vectors = model.encode(f"search_query: {topic} taking into account the following notes: {mastery_notes}")
 
