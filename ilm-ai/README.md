@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+# LearnSmart AI App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based web application built with Vite, featuring Tailwind CSS for styling.
+
+## Prerequisites
+
+- Node.js (version 16 or higher)
+- npm or yarn package manager
+
+## Getting Started
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd learnsmart-ai-app
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or if using yarn
+yarn install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+# or if using yarn
+yarn dev
+```
+
+The application will be available at `http://localhost:5173` by default.
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm run dev` - Start the development server
+- `npm run build` - Build the application for production
+- `npm run preview` - Preview the production build locally
+- `npm run lint` - Run ESLint to check for code issues
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React 19
+- Vite 6
+- Tailwind CSS 3
+- ESLint
+- PostCSS
+- Autoprefixer
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```
+learnsmart-ai-app/
+├── public/          # Static assets
+├── src/            # Source files
+│   ├── assets/     # Images and other assets
+│   ├── App.jsx     # Main application component
+│   ├── main.jsx    # Application entry point
+│   └── index.css   # Global styles and Tailwind imports
+├── index.html      # HTML template
+├── package.json    # Project dependencies and scripts
+├── postcss.config.js # PostCSS configuration
+├── tailwind.config.js # Tailwind CSS configuration
+└── vite.config.js  # Vite configuration
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Development
 
-### `npm run build`
+The project uses:
+- Tailwind CSS for styling
+- ESLint for code linting
+- Vite for fast development and building
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Building for Production
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To create a production build:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm run build
+# or
+yarn build
+```
 
-### `npm run eject`
+The built files will be in the `dist` directory.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## License
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[Add your license information here]
