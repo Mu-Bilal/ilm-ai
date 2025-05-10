@@ -43,9 +43,19 @@ const hardcodedProgress = {
   'cs101': {
     overall: 75,
     topics: {
-      'topic1_1': 85, // Introduction to Probability
-      'topic1_2': 65, // Bayesian Networks
-      'topic1_3': 75  // Hidden Markov Models
+      '1 Fundamentals': 85,
+      '2 Bayesian Linear Regression': 65,
+      '3 Kalman Filters': 75,
+      '4 Gaussian Processes': 70,
+      '5 Variational Inference': 60,
+      '6 Markov Chain Monte Carlo Methods': 55,
+      '7 Bayesian Deep Learning': 50,
+      '8 Active Learning': 65,
+      '9 Bayesian Optimization': 70,
+      '10 Markov Decision Processes': 60,
+      '11 Tabular Reinforcement Learning': 55,
+      '12 Model-free Approximate Reinforcement Learning': 50,
+      '13 Model-based Approximate Reinforcement Learning': 45
     }
   }
 };
@@ -245,31 +255,31 @@ function App() {
     }
   };
   
-  const handlePersonalizeNotes = (topic) => {
-    setFeedbackMessage(`Personalized notes for "${topic.name}" are being generated based on your weakest points... (This is a simulation)`);
-    // In a real app, this would trigger a backend process
-    // For now, we can just show a message and maybe update the notes after a delay
-    setTimeout(() => {
-        const updatedCourses = courses.map(c => {
-            if (c.id === selectedCourse.id) {
-                return {
-                    ...c,
-                    topics: c.topics.map(t => {
-                        if (t.id === topic.id) {
-                            return {...t, notes: `(Personalized) ${t.notes} \n\nKey areas to focus: [Simulated weak point 1], [Simulated weak point 2].` };
-                        }
-                        return t;
-                    })
-                };
-            }
-            return c;
+  const handlePersonalizeNotes = async (topic) => {
+    setFeedbackMessage(`Personalized notes for "${topic.name}" are being generated based on your weakest points...`);
+    try {
+        const response = await fetch('http://localhost:8000/api/personalize-notes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: '1', // TODO: Replace with actual user ID
+                course_id: selectedCourse.id,
+                chapter_id: topic.name
+            })
         });
-        setCourses(updatedCourses);
-        const updatedCourse = updatedCourses.find(c => c.id === selectedCourse.id);
-        setSelectedCourse(updatedCourse);
-        setSelectedTopic(updatedCourse?.topics.find(t => t.id === topic.id));
-        setFeedbackMessage(`Personalized notes for "${topic.name}" have been updated!`);
-    }, 2000);
+
+        if (!response.ok) {
+            throw new Error('Failed to generate personalized notes');
+        }
+
+        const data = await response.json();
+        setFeedbackMessage(data.notes);
+    } catch (error) {
+        console.error('Error generating personalized notes:', error);
+        setFeedbackMessage('Failed to generate personalized notes. Please try again.');
+    }
   };
 
   // Filtered courses for dashboard
