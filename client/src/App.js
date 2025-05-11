@@ -153,14 +153,40 @@ function App() {
     navigateTo('quizMode', { courseId, topicId });
   };
 
-  const handleSubmitAnswer = () => {
-    const currentQuestion = currentQuizQuestions[currentQuestionIndex];
-    const isCorrect = checkAnswer(userAnswer, currentQuestion.explanation);
-    setIsAnswerCorrect(isCorrect);
-    setShowExplanation(true);
+  // const handleSubmitAnswer = () => {
+  //   const currentQuestion = currentQuizQuestions[currentQuestionIndex];
+  //   const isCorrect = checkAnswer(userAnswer, currentQuestion.explanation);
+  //   setIsAnswerCorrect(isCorrect);
+  //   setShowExplanation(true);
 
-    if (isCorrect) {
-      setCorrectAnswers(prev => prev + 1);
+  //   if (isCorrect) {
+  //     setCorrectAnswers(prev => prev + 1);
+  //   }
+  const handleSubmitAnswer = async () => {
+    const currentQuestion = currentQuizQuestions[currentQuestionIndex];
+    try {
+      const response = await fetch('http://localhost:8000/api/check-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userAnswer: userAnswer,
+          question: currentQuestion.text,
+          explanation: currentQuestion.explanation
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check answer');
+      }
+
+      const data = await response.json();
+      setIsAnswerCorrect(data.isCorrect);
+      setShowExplanation(true);
+
+    } catch (error) {
+      console.error('Error checking answer:', error);
     }
 
     // Update progress if answer is correct
