@@ -136,26 +136,8 @@ export const mockQuizQuestions = {
       type: 'recall', 
       explanation: 'Conditional probability P(A|B) is the likelihood of event A occurring given that B is true. Formula: P(A ∩ B) / P(B). It is foundational for Bayes\' Theorem.' 
     },
-    { 
-      id: 'q2', 
-      text: 'Explain Bayes\' Theorem and its components.', 
-      type: 'test', 
-      explanation: 'Bayes\' Theorem describes the probability of an event based on prior knowledge of conditions that might be related to the event. Formula: P(A|B) = [P(B|A) * P(A)] / P(B).' 
-    },
     {
-      id: 'q3',
-      text: 'What is the difference between joint probability and marginal probability?',
-      type: 'test',
-      explanation: 'Joint probability P(A,B) is the probability of both events A and B occurring together. Marginal probability P(A) is the probability of event A occurring regardless of event B. Marginal probability can be obtained by summing joint probabilities over all possible values of the other variable.'
-    },
-    {
-      id: 'q4',
-      text: 'Explain the concept of independence in probability theory.',
-      type: 'test',
-      explanation: 'Two events A and B are independent if the occurrence of one does not affect the probability of the other. Mathematically, P(A|B) = P(A) and P(B|A) = P(B). For independent events, P(A ∩ B) = P(A) * P(B).'
-    },
-    {
-      id: 'q5',
+      id: 'q2',
       text: 'Which of the following correctly describes the law of total probability?',
       type: 'test',
       questionType: 'multipleChoice',
@@ -169,7 +151,7 @@ export const mockQuizQuestions = {
       explanation: 'The law of total probability states that the probability of an event can be calculated by considering all possible values of another random variable. Mathematically, P(A) = Σ P(A|B_i)P(B_i) for a partition B_i of the sample space.'
     },
     {
-      id: 'q6',
+      id: 'q3',
       text: 'Which approach is central to Bayesian statistics?',
       type: 'test',
       questionType: 'multipleChoice',
@@ -181,7 +163,25 @@ export const mockQuizQuestions = {
       ],
       correctOptionIndex: 1,
       explanation: 'Bayesian statistics treats parameters as random variables with prior distributions, which are updated based on observed data to form posterior distributions. This is in contrast to frequentist statistics, which treats parameters as fixed but unknown values.'
-    }
+    },
+    { 
+      id: 'q4', 
+      text: 'Explain Bayes\' Theorem and its components.', 
+      type: 'test', 
+      explanation: 'Bayes\' Theorem describes the probability of an event based on prior knowledge of conditions that might be related to the event. Formula: P(A|B) = [P(B|A) * P(A)] / P(B).' 
+    },
+    {
+      id: 'q5',
+      text: 'What is the difference between joint probability and marginal probability?',
+      type: 'test',
+      explanation: 'Joint probability P(A,B) is the probability of both events A and B occurring together. Marginal probability P(A) is the probability of event A occurring regardless of event B. Marginal probability can be obtained by summing joint probabilities over all possible values of the other variable.'
+    },
+    {
+      id: 'q6',
+      text: 'Explain the concept of independence in probability theory.',
+      type: 'test',
+      explanation: 'Two events A and B are independent if the occurrence of one does not affect the probability of the other. Mathematically, P(A|B) = P(A) and P(B|A) = P(B). For independent events, P(A ∩ B) = P(A) * P(B).'
+    },
   ],
   'cs101_1 Fundamentals': [
     {
