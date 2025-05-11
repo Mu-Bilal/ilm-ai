@@ -2,6 +2,9 @@ import React from 'react';
 import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import { Card, Button } from '../components/HelperComponents';
 import ChatInterface from '../components/ChatInterface';
+import TextQuestionInput from '../components/TextQuestionInput';
+import MultipleChoiceInput from '../components/MultipleChoiceInput';
+import MultipleChoiceExplanation from '../components/MultipleChoiceExplanation';
 
 const QuizView = ({ 
   question, 
@@ -25,6 +28,9 @@ const QuizView = ({
     else if (quizType === 'test') title = `Test Quiz: ${topicName || courseName}`;
     return title;
   };
+
+  // Determine if question is multiple choice by checking for options property
+  const isMultipleChoice = question.options && Array.isArray(question.options);
   
   return (
     <Card className="max-w-3xl mx-auto">
@@ -37,43 +43,60 @@ const QuizView = ({
 
       {!showExplanation && (
         <>
-          <textarea
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            placeholder="Type your answer here..."
-            rows="5"
-            className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none mb-4"
-          />
-          <Button onClick={onSubmitAnswer} icon={CheckCircle} className="w-full" disabled={!userAnswer.trim()}>Check Answer</Button>
+          {isMultipleChoice ? (
+            <MultipleChoiceInput 
+              question={question}
+              userAnswer={userAnswer}
+              setUserAnswer={setUserAnswer}
+              onSubmitAnswer={onSubmitAnswer}
+            />
+          ) : (
+            <TextQuestionInput
+              userAnswer={userAnswer}
+              setUserAnswer={setUserAnswer}
+              onSubmitAnswer={onSubmitAnswer}
+            />
+          )}
         </>
       )}
 
       {showExplanation && (
         <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-gray-700 dark:text-gray-300">Your Answer:</h4>
-            <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">{userAnswer || "(No answer provided)"}</p>
-          </div>
-          <div className={`p-4 ${isAnswerCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'} border rounded-lg`}>
-            <div className="flex items-center gap-2 mb-2">
-              {isAnswerCorrect ? (
-                <CheckCircle className="w-5 h-5 text-green-500" />
-              ) : (
-                <XCircle className="w-5 h-5 text-red-500" />
-              )}
-              <h4 className={`font-semibold ${isAnswerCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
-                {isAnswerCorrect ? 'Correct!' : 'Not quite right'}
-              </h4>
-            </div>
-            <p className={`${isAnswerCorrect ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}`}>
-              {question.explanation}
-            </p>
-            {question.type === 'test' && topicName && (
-              <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">
-                (Related to: <a href="#" className="underline">{topicName} course materials</a>)
-              </p>
-            )}
-          </div>
+          {isMultipleChoice ? (
+            <MultipleChoiceExplanation 
+              question={question}
+              userAnswer={userAnswer}
+              isAnswerCorrect={isAnswerCorrect}
+              topicName={topicName}
+            />
+          ) : (
+            <>
+              <div>
+                <h4 className="font-semibold text-gray-700 dark:text-gray-300">Your Answer:</h4>
+                <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">{userAnswer || "(No answer provided)"}</p>
+              </div>
+              <div className={`p-4 ${isAnswerCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'} border rounded-lg`}>
+                <div className="flex items-center gap-2 mb-2">
+                  {isAnswerCorrect ? (
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <XCircle className="w-5 h-5 text-red-500" />
+                  )}
+                  <h4 className={`font-semibold ${isAnswerCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                    {isAnswerCorrect ? 'Correct!' : 'Not quite right'}
+                  </h4>
+                </div>
+                <p className={`${isAnswerCorrect ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}`}>
+                  {question.explanation}
+                </p>
+                {question.type === 'test' && topicName && (
+                  <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">
+                    (Related to: <a href="#" className="underline">{topicName} course materials</a>)
+                  </p>
+                )}
+              </div>
+            </>
+          )}
 
           <div className="mt-6">
             <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">

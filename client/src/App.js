@@ -153,95 +153,109 @@ function App() {
     navigateTo('quizMode', { courseId, topicId });
   };
 
-  // const handleSubmitAnswer = () => {
-  //   const currentQuestion = currentQuizQuestions[currentQuestionIndex];
-  //   const isCorrect = checkAnswer(userAnswer, currentQuestion.explanation);
-  //   setIsAnswerCorrect(isCorrect);
-  //   setShowExplanation(true);
-
-  //   if (isCorrect) {
-  //     setCorrectAnswers(prev => prev + 1);
-  //   }
   const handleSubmitAnswer = async () => {
     const currentQuestion = currentQuizQuestions[currentQuestionIndex];
+    let isCorrect = false;
+    
     try {
-      const response = await fetch('http://localhost:8000/api/check-answer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userAnswer: userAnswer,
-          question: currentQuestion.text,
-          explanation: currentQuestion.explanation
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to check answer');
-      }
-
-      const data = await response.json();
-      setIsAnswerCorrect(data.isCorrect);
-      setShowExplanation(true);
-
-    } catch (error) {
-      console.error('Error checking answer:', error);
-    }
-
-    // Update progress if answer is correct
-    if (isCorrect && selectedCourse) {
-      const updatedCourses = courses.map(course => {
-        if (course.id === selectedCourse.id) {
-          const updatedTopics = course.topics.map(topic => {
-            if (selectedTopic && topic.id === selectedTopic.id) {
-              // Calculate progress increase based on question type and current progress
-              let progressIncrease;
-              if (quizType === 'test') {
-                // Test questions have higher weight
-                progressIncrease = 10;
-              } else if (quizType === 'flash') {
-                // Flash questions have medium weight
-                progressIncrease = 7;
-              } else {
-                // Personalized questions have lower weight
-                progressIncrease = 5;
-              }
-
-              // Adjust progress increase based on current progress
-              // Harder to gain progress when already at higher levels
-              if (topic.progress >= 80) {
-                progressIncrease *= 0.5;
-              } else if (topic.progress >= 60) {
-                progressIncrease *= 0.7;
-              } else if (topic.progress >= 40) {
-                progressIncrease *= 0.85;
-              }
-
-              // Calculate new progress
-              const newProgress = Math.min(Math.round(topic.progress + progressIncrease), 100);
-              return { ...topic, progress: newProgress };
-            }
-            return topic;
+      // Handle multiple choice questions locally
+      if (currentQuestion.questionType === 'multipleChoice' && currentQuestion.options) {
+        // For multiple choice, check if the selected answer is the correct option
+        const correctOption = currentQuestion.options[currentQuestion.correctOptionIndex];
+        isCorrect = userAnswer === correctOption;
+      } else {
+        // For text questions, use API if available, otherwise fallback to local check
+        try {
+          const response = await fetch('http://localhost:8000/api/check-answer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userAnswer: userAnswer,
+              question: currentQuestion.text,
+              explanation: currentQuestion.explanation
+            }),
           });
 
-          // Calculate new course progress based on weighted average of topics
-          const totalWeight = updatedTopics.reduce((sum, topic) => sum + (topic.progress / 100), 0);
-          const newCourseProgress = Math.round((totalWeight / updatedTopics.length) * 100);
+          if (!response.ok) {
+            throw new Error('Failed to check answer');
+          }
 
-          return {
-            ...course,
-            topics: updatedTopics,
-            progress: newCourseProgress
-          };
+          const data = await response.json();
+          isCorrect = data.isCorrect;
+        } catch (error) {
+          console.error('API error, falling back to local answer checking:', error);
+          // Fallback to local answer checking
+          isCorrect = checkAnswer(userAnswer, currentQuestion.explanation);
         }
-        return course;
-      });
-
-      setCourses(updatedCourses);
-      if (selectedCourse) {
-        setSelectedCourse(updatedCourses.find(c => c.id === selectedCourse.id));
       }
+      
+      // Set the result and show explanation
+      setIsAnswerCorrect(isCorrect);
+      setShowExplanation(true);
+      
+      // Increment correct answers counter if the answer was correct
+      if (isCorrect) {
+        setCorrectAnswers(prev => prev + 1);
+      }
+
+      // Update progress if answer is correct
+      if (isCorrect && selectedCourse) {
+        const updatedCourses = courses.map(course => {
+          if (course.id === selectedCourse.id) {
+            const updatedTopics = course.topics.map(topic => {
+              if (selectedTopic && topic.id === selectedTopic.id) {
+                // Calculate progress increase based on question type and current progress
+                let progressIncrease;
+                if (quizType === 'test') {
+                  // Test questions have higher weight
+                  progressIncrease = 10;
+                } else if (quizType === 'flash') {
+                  // Flash questions have medium weight
+                  progressIncrease = 7;
+                } else {
+                  // Personalized questions have lower weight
+                  progressIncrease = 5;
+                }
+
+                // Adjust progress increase based on current progress
+                // Harder to gain progress when already at higher levels
+                if (topic.progress >= 80) {
+                  progressIncrease *= 0.5;
+                } else if (topic.progress >= 60) {
+                  progressIncrease *= 0.7;
+                } else if (topic.progress >= 40) {
+                  progressIncrease *= 0.85;
+                }
+
+                // Calculate new progress
+                const newProgress = Math.min(Math.round(topic.progress + progressIncrease), 100);
+                return { ...topic, progress: newProgress };
+              }
+              return topic;
+            });
+
+            // Calculate new course progress based on weighted average of topics
+            const totalWeight = updatedTopics.reduce((sum, topic) => sum + (topic.progress / 100), 0);
+            const newCourseProgress = Math.round((totalWeight / updatedTopics.length) * 100);
+
+            return {
+              ...course,
+              topics: updatedTopics,
+              progress: newCourseProgress
+            };
+          }
+          return course;
+        });
+
+        setCourses(updatedCourses);
+        if (selectedCourse) {
+          setSelectedCourse(updatedCourses.find(c => c.id === selectedCourse.id));
+        }
+      }
+    } catch (error) {
+      console.error('Error checking answer:', error);
     }
   };
 
