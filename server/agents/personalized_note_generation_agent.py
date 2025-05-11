@@ -8,9 +8,9 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 from agents.tools import get_user_mastery_for_chapter, search_course_content
 
-import logfire
+# import logfire
 
-logfire.configure()
+# logfire.configure()
 
 @dataclass
 class Deps:

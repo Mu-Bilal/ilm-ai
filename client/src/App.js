@@ -91,6 +91,8 @@ function App() {
   const [quizStartTime, setQuizStartTime] = useState(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [isLoadingNotes, setIsLoadingNotes] = useState(false);
+  const [isEvaluatingAnswer, setIsEvaluatingAnswer] = useState(false);
+  const [answerEvaluation, setAnswerEvaluation] = useState(null);
 
   // Navigation
   const navigateTo = (view, params = {}) => {
@@ -153,17 +155,11 @@ function App() {
     navigateTo('quizMode', { courseId, topicId });
   };
 
-  // const handleSubmitAnswer = () => {
-  //   const currentQuestion = currentQuizQuestions[currentQuestionIndex];
-  //   const isCorrect = checkAnswer(userAnswer, currentQuestion.explanation);
-  //   setIsAnswerCorrect(isCorrect);
-  //   setShowExplanation(true);
-
-  //   if (isCorrect) {
-  //     setCorrectAnswers(prev => prev + 1);
-  //   }
   const handleSubmitAnswer = async () => {
     const currentQuestion = currentQuizQuestions[currentQuestionIndex];
+    setIsEvaluatingAnswer(true);
+    setAnswerEvaluation(null);
+    
     try {
       const response = await fetch('http://localhost:8000/api/check-answer', {
         method: 'POST',
@@ -182,15 +178,36 @@ function App() {
       }
 
       const data = await response.json();
-      setIsAnswerCorrect(data.isCorrect);
+      
+      // Update the answer evaluation state with the server response
+      setAnswerEvaluation({
+        assessment: data.assessment,
+        score: data.score,
+        justification: data.justification,
+        feedback: data.feedback_for_student
+      });
+      
+      setIsAnswerCorrect(data.score >= 0); // Consider 70% or above as correct
       setShowExplanation(true);
+
+      if (data.score >= 70) {
+        setCorrectAnswers(prev => prev + 1);
+      }
 
     } catch (error) {
       console.error('Error checking answer:', error);
+      setAnswerEvaluation({ 
+        assessment: 'Error',
+        score: 0,
+        justification: 'Failed to evaluate answer.',
+        feedback: 'Please try again.'
+      });
+    } finally {
+      setIsEvaluatingAnswer(false);
     }
 
     // Update progress if answer is correct
-    if (isCorrect && selectedCourse) {
+    if (answerEvaluation?.score >= 70 && selectedCourse) {
       const updatedCourses = courses.map(course => {
         if (course.id === selectedCourse.id) {
           const updatedTopics = course.topics.map(topic => {
@@ -360,6 +377,8 @@ function App() {
           currentQuestionIndex={currentQuestionIndex}
           totalQuestions={currentQuizQuestions.length}
           isAnswerCorrect={isAnswerCorrect}
+          answerEvaluation={answerEvaluation}
+          isEvaluatingAnswer={isEvaluatingAnswer}
         /> : <p>Loading quiz...</p>;
       default:
         return <DashboardView courses={filteredCourses} onNavigate={navigateTo} onAddCourseClick={() => navigateTo('addCourse')} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;

@@ -12,13 +12,13 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 from tools import get_user_mastery, get_data_from_topic
 
-import logfire
+# import logfire
 
 """
     This agent is responsible for generating questions from the course data.
 """
 
-logfire.configure()
+# logfire.configure()
 
 
 @dataclass

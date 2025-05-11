@@ -6,9 +6,10 @@ from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
-from tools.rag import search_course_content
+from agents.tools.rag import search_course_content
 
-import logfire
+# import logfire
+# logfire.configure(token='pylf_v1_eu_W7WPNNgs18K4HcXghtmnzsZ5HdQY1f2ZZkT7pBflsZdt')
 # --- 1. Define Pydantic Models ---
 
 class GradingInput(BaseModel):
@@ -53,7 +54,7 @@ try:
         tools=[search_course_content]        
     )
 
-    grading_agent.instrument_all()
+    # grading_agent.instrument_all()
     
 except Exception as e:
     print(f"Error initializing Ollama LLM or Agent: {e}")
@@ -155,7 +156,8 @@ async def evaluate_answer(question: str, correct_answer: str, student_answer: st
         correct_answer=correct_answer,
         student_answer=student_answer,
     )
-    await get_answer_grade(input)
+    grade = await get_answer_grade(input)
+    return grade
 
 
 if __name__ == "__main__":
