@@ -24,7 +24,11 @@ const TopicView = ({
     <div className="space-y-8">
         <Card>
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-                <CircularProgressBar progress={topic.progress} size={140} strokeWidth={10} color="text-green-600 dark:text-green-400" />
+                <CircularProgressBar 
+                    progress={topic.progress} 
+                    size={140} 
+                    strokeWidth={10}
+                />
                 <div className="flex-1 text-center md:text-left">
                     <p className="text-sm text-blue-500 dark:text-blue-400 font-medium mb-1">{courseName}</p>
                     <h2 className="text-3xl font-bold mb-3">{topic.name}</h2>

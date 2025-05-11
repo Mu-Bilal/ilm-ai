@@ -1,13 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import { getProgressBarColors } from '../theme';
 
-export const ProgressBar = ({ progress, size = 'h-2.5', color = 'bg-blue-600' }) => (
-  <div className={`w-full bg-red-200 rounded-full ${size} dark:bg-red-700`}>
-    <div className={`${color} ${size} rounded-full`} style={{ width: `${progress}%` }}></div>
-  </div>
-);
+export const ProgressBar = ({ progress, size = 'h-2.5', colorName = 'primary', customColor = null }) => {
+  const progressColors = getProgressBarColors('linear');
+  const fillColor = customColor || progressColors.fill;
+  const bgColor = progressColors.bg;
+  const darkBgColor = progressColors.darkBg;
+  
+  return (
+    <div className={`w-full ${bgColor} ${darkBgColor} rounded-full ${size}`}>
+      <div className={`${fillColor} ${size} rounded-full`} style={{ width: `${progress}%` }}></div>
+    </div>
+  );
+};
 
-export const CircularProgressBar = ({ progress, size = 120, strokeWidth = 10, color = "text-blue-600", trackColor = "text-gray-200", animationDuration = "1s" }) => {
+export const CircularProgressBar = ({ 
+  progress, 
+  size = 120, 
+  strokeWidth = 10, 
+  colorName = 'primary',
+  customColor = null,
+  customTrackColor = null,
+  animationDuration = "1s" 
+}) => {
   const [animatedProgress, setAnimatedProgress] = useState(0);
+  const progressColors = getProgressBarColors('circular');
+  
+  const fillColor = customColor || progressColors.fill;
+  const trackColor = customTrackColor || progressColors.track;
+  
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
@@ -31,7 +52,7 @@ export const CircularProgressBar = ({ progress, size = 120, strokeWidth = 10, co
           cy={size / 2}
         />
         <circle
-          className={color}
+          className={fillColor}
           stroke="currentColor"
           strokeWidth={strokeWidth}
           fill="transparent"
@@ -46,8 +67,7 @@ export const CircularProgressBar = ({ progress, size = 120, strokeWidth = 10, co
           }}
         />
       </svg>
-      {/* Optional: Animate the text as well, or keep it instant */}
-      <span className={`absolute text-xl font-bold ${color}`}>{progress}%</span>
+      <span className={`absolute text-xl font-bold ${fillColor}`}>{Math.round(animatedProgress)}%</span>
     </div>
   );
 };

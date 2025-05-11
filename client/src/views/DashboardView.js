@@ -57,7 +57,7 @@ const DashboardView = ({ courses, onNavigate, onAddCourseClick, searchTerm, setS
                 <span>Overall Progress</span>
                 <span>{course.progress}%</span>
             </div>
-            <ProgressBar progress={course.progress} size="h-2" color="bg-white/50" />
+            <ProgressBar progress={course.progress} size="h-2" />
           </div>
         </Card>
       ))}
