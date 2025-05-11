@@ -134,7 +134,7 @@ export const mockQuizQuestions = {
       id: 'q1', 
       text: 'What is the definition of conditional probability?', 
       type: 'recall', 
-      explanation: 'Conditional probability P(A|B) is the likelihood of event A occurring given that B is true. Formula: P(A|B) = P(A ∩ B) / P(B). It is foundational for Bayes\' Theorem.' 
+      explanation: 'Conditional probability P(A|B) is the likelihood of event A occurring given that B is true. Formula: P(A ∩ B) / P(B). It is foundational for Bayes\' Theorem.' 
     },
     { 
       id: 'q2', 
@@ -153,6 +153,70 @@ export const mockQuizQuestions = {
       text: 'Explain the concept of independence in probability theory.',
       type: 'test',
       explanation: 'Two events A and B are independent if the occurrence of one does not affect the probability of the other. Mathematically, P(A|B) = P(A) and P(B|A) = P(B). For independent events, P(A ∩ B) = P(A) * P(B).'
+    },
+    {
+      id: 'q5',
+      text: 'Which of the following correctly describes the law of total probability?',
+      type: 'test',
+      questionType: 'multipleChoice',
+      options: [
+        'The probability of an event equals the sum of the probabilities of its possible outcomes',
+        'The probability of an event can be calculated using all possible values of another random variable',
+        'The probability of an event equals the product of conditional probabilities',
+        'The probability of an event is always equal to 1 minus the probability of its complement'
+      ],
+      correctOptionIndex: 1,
+      explanation: 'The law of total probability states that the probability of an event can be calculated by considering all possible values of another random variable. Mathematically, P(A) = Σ P(A|B_i)P(B_i) for a partition B_i of the sample space.'
+    },
+    {
+      id: 'q6',
+      text: 'Which approach is central to Bayesian statistics?',
+      type: 'test',
+      questionType: 'multipleChoice',
+      options: [
+        'Assuming all probabilities are equal',
+        'Treating parameters as random variables with prior distributions',
+        'Maximizing the likelihood function',
+        'Using only frequentist methods'
+      ],
+      correctOptionIndex: 1,
+      explanation: 'Bayesian statistics treats parameters as random variables with prior distributions, which are updated based on observed data to form posterior distributions. This is in contrast to frequentist statistics, which treats parameters as fixed but unknown values.'
+    }
+  ],
+  'cs101_1 Fundamentals': [
+    {
+      id: 'q_fund_1',
+      text: 'What are the three axioms of probability?',
+      type: 'test',
+      explanation: 'The three axioms of probability are: 1) Non-negativity: P(A) ≥ 0 for any event A, 2) Normalization: P(Ω) = 1 for the entire sample space Ω, and 3) Additivity: For mutually exclusive events A and B, P(A ∪ B) = P(A) + P(B).'
+    },
+    {
+      id: 'q_fund_2',
+      text: 'Which of these statements about random variables is true?',
+      type: 'test',
+      questionType: 'multipleChoice',
+      options: [
+        'Random variables can only take discrete values',
+        'Continuous random variables have probability mass functions',
+        'A random variable is a function that maps outcomes to real numbers',
+        'Expected values can only be calculated for discrete random variables'
+      ],
+      correctOptionIndex: 2,
+      explanation: 'A random variable is a function that maps outcomes from a sample space to real numbers. This allows us to apply mathematical operations to outcomes from random experiments.'
+    },
+    {
+      id: 'q_fund_3',
+      text: 'What does the expected value of a random variable represent?',
+      type: 'recall',
+      questionType: 'multipleChoice',
+      options: [
+        'The most likely outcome',
+        'The middle value in the distribution',
+        'The weighted average of all possible values',
+        'The maximum possible value'
+      ],
+      correctOptionIndex: 2,
+      explanation: 'The expected value (or mean) of a random variable is the weighted average of all possible values, where the weights are given by the probabilities. It represents the long-term average value if the random experiment is repeated many times.'
     }
   ]
 }; 

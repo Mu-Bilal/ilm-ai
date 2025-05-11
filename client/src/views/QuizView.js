@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { CheckCircle, XCircle, ArrowLeft, Brain, Sparkles, Target, Loader2 } from 'lucide-react';
 import { Card, Button } from '../components/HelperComponents';
 import ChatInterface from '../components/ChatInterface';
+import TextQuestionInput from '../components/TextQuestionInput';
+import MultipleChoiceInput from '../components/MultipleChoiceInput';
+import MultipleChoiceExplanation from '../components/MultipleChoiceExplanation';
 
 const LoadingOverlay = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -62,7 +65,8 @@ const QuizView = ({
     }
   };
 
-  console.log('isEvaluatingAnswer:', isEvaluatingAnswer); // Debug log
+  // Determine if question is multiple choice by checking for options property
+  const isMultipleChoice = question.options && Array.isArray(question.options);
   
   const handleSubmit = async () => {
     setLocalLoading(true);
@@ -86,63 +90,105 @@ const QuizView = ({
 
         {!showExplanation && (
           <>
-            <textarea
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              placeholder="Type your answer here..."
-              rows="5"
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none mb-4"
-            />
-            <Button 
-              onClick={handleSubmit} 
-              icon={CheckCircle} 
-              className="w-full" 
-              disabled={!userAnswer.trim() || isEvaluatingAnswer || localLoading}
-            >
-              {(isEvaluatingAnswer || localLoading) ? 'Evaluating...' : 'Check Answer'}
-            </Button>
+            {isMultipleChoice ? (
+              <MultipleChoiceInput 
+                question={question}
+                userAnswer={userAnswer}
+                setUserAnswer={setUserAnswer}
+                onSubmitAnswer={handleSubmit}
+              />
+            ) : (
+              <>
+                <textarea
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  placeholder="Type your answer here..."
+                  rows="5"
+                  className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none mb-4"
+                />
+                <Button 
+                  onClick={handleSubmit} 
+                  icon={CheckCircle} 
+                  className="w-full" 
+                  disabled={!userAnswer.trim() || isEvaluatingAnswer || localLoading}
+                >
+                  {(isEvaluatingAnswer || localLoading) ? 'Evaluating...' : 'Check Answer'}
+                </Button>
+              </>
+            )}
           </>
         )}
 
-        {showExplanation && answerEvaluation && (
+        {showExplanation && (
           <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold text-gray-700 dark:text-gray-300">Your Answer:</h4>
-              <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">{userAnswer || "(No answer provided)"}</p>
-            </div>
-
-            <div className={`p-4 ${isAnswerCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'} border rounded-lg`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  {isAnswerCorrect ? (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-red-500" />
-                  )}
-                  <h4 className={`font-semibold ${isAnswerCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
-                    {answerEvaluation.assessment}
-                  </h4>
+            {isMultipleChoice ? (
+              <MultipleChoiceExplanation 
+                question={question}
+                userAnswer={userAnswer}
+                isAnswerCorrect={isAnswerCorrect}
+                topicName={topicName}
+              />
+            ) : answerEvaluation ? (
+              <>
+                <div>
+                  <h4 className="font-semibold text-gray-700 dark:text-gray-300">Your Answer:</h4>
+                  <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">{userAnswer || "(No answer provided)"}</p>
                 </div>
-                <span className={`text-sm font-medium ${isAnswerCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                  Score: {answerEvaluation.score}%
-                </span>
-              </div>
 
-              {answerEvaluation.feedback && (
-                <div className="mb-3">
+                <div className={`p-4 ${isAnswerCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'} border rounded-lg`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {isAnswerCorrect ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      )}
+                      <h4 className={`font-semibold ${isAnswerCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                        {answerEvaluation.assessment}
+                      </h4>
+                    </div>
+                    <span className={`text-sm font-medium ${isAnswerCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                      Score: {answerEvaluation.score}%
+                    </span>
+                  </div>
+
+                  {answerEvaluation.feedback && (
+                    <div className="mb-3">
+                      <p className={`${isAnswerCorrect ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}`}>
+                        {answerEvaluation.feedback}
+                      </p>
+                    </div>
+                  )}
+
+                  {answerEvaluation.justification && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <h5 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Detailed Explanation:</h5>
+                      <p className="text-gray-600 dark:text-gray-400">{answerEvaluation.justification}</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                <h4 className="font-semibold text-gray-700 dark:text-gray-300">Your Answer:</h4>
+                <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">{userAnswer || "(No answer provided)"}</p>
+                <div className={`p-4 mt-4 ${isAnswerCorrect ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'} border rounded-lg`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    {isAnswerCorrect ? (
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-500" />
+                    )}
+                    <h4 className={`font-semibold ${isAnswerCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                      {isAnswerCorrect ? 'Correct!' : 'Not quite right'}
+                    </h4>
+                  </div>
                   <p className={`${isAnswerCorrect ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}`}>
-                    {answerEvaluation.feedback}
+                    {question.explanation}
                   </p>
                 </div>
-              )}
-
-              {answerEvaluation.justification && (
-                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                  <h5 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Detailed Explanation:</h5>
-                  <p className="text-gray-600 dark:text-gray-400">{answerEvaluation.justification}</p>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             <div className="mt-6">
               <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">

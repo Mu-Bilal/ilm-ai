@@ -161,53 +161,81 @@ function App() {
     setAnswerEvaluation(null);
     
     try {
-      const response = await fetch('http://localhost:8000/api/check-answer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userAnswer: userAnswer,
-          question: currentQuestion.text,
-          explanation: currentQuestion.explanation
-        }),
-      });
+      // Handle multiple choice questions locally
+      if (currentQuestion.questionType === 'multipleChoice' && currentQuestion.options) {
+        // For multiple choice, check if the selected answer is the correct option
+        const correctOption = currentQuestion.options[currentQuestion.correctOptionIndex];
+        const isCorrect = userAnswer === correctOption;
+        
+        // Set answer evaluation without API call for multiple choice
+        setIsAnswerCorrect(isCorrect);
+        setShowExplanation(true);
+        
+        if (isCorrect) {
+          setCorrectAnswers(prev => prev + 1);
+        }
+      } else {
+        // For text questions, use API if available
+        const response = await fetch('http://localhost:8000/api/check-answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userAnswer: userAnswer,
+            question: currentQuestion.text,
+            explanation: currentQuestion.explanation
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to check answer');
+        if (!response.ok) {
+          throw new Error('Failed to check answer');
+        }
+
+        const data = await response.json();
+        
+        // Update the answer evaluation state with the server response
+        setAnswerEvaluation({
+          assessment: data.assessment,
+          score: data.score,
+          justification: data.justification,
+          feedback: data.feedback_for_student
+        });
+        
+        setIsAnswerCorrect(data.score >= 70); // Consider 70% or above as correct
+        setShowExplanation(true);
+
+        if (data.score >= 70) {
+          setCorrectAnswers(prev => prev + 1);
+        }
       }
-
-      const data = await response.json();
-      
-      // Update the answer evaluation state with the server response
-      setAnswerEvaluation({
-        assessment: data.assessment,
-        score: data.score,
-        justification: data.justification,
-        feedback: data.feedback_for_student
-      });
-      
-      setIsAnswerCorrect(data.score >= 0); // Consider 70% or above as correct
-      setShowExplanation(true);
-
-      if (data.score >= 70) {
-        setCorrectAnswers(prev => prev + 1);
-      }
-
     } catch (error) {
       console.error('Error checking answer:', error);
-      setAnswerEvaluation({ 
-        assessment: 'Error',
-        score: 0,
-        justification: 'Failed to evaluate answer.',
-        feedback: 'Please try again.'
-      });
+      
+      // Fallback to local checking for multiple choice
+      if (currentQuestion.questionType === 'multipleChoice' && currentQuestion.options) {
+        const correctOption = currentQuestion.options[currentQuestion.correctOptionIndex];
+        const isCorrect = userAnswer === correctOption;
+        setIsAnswerCorrect(isCorrect);
+        if (isCorrect) {
+          setCorrectAnswers(prev => prev + 1);
+        }
+      } else {
+        // Fallback for text questions
+        setAnswerEvaluation({ 
+          assessment: 'Error',
+          score: 0,
+          justification: 'Failed to evaluate answer.',
+          feedback: 'Please try again.'
+        });
+      }
+      setShowExplanation(true);
     } finally {
       setIsEvaluatingAnswer(false);
     }
 
     // Update progress if answer is correct
-    if (answerEvaluation?.score >= 70 && selectedCourse) {
+    if (isAnswerCorrect && selectedCourse) {
       const updatedCourses = courses.map(course => {
         if (course.id === selectedCourse.id) {
           const updatedTopics = course.topics.map(topic => {
