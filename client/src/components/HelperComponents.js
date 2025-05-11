@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const ProgressBar = ({ progress, size = 'h-2.5', color = 'bg-blue-600' }) => (
   <div className={`w-full bg-red-200 rounded-full ${size} dark:bg-red-700`}>
@@ -6,10 +6,17 @@ export const ProgressBar = ({ progress, size = 'h-2.5', color = 'bg-blue-600' })
   </div>
 );
 
-export const CircularProgressBar = ({ progress, size = 120, strokeWidth = 10, color = "text-blue-600", trackColor = "text-gray-200" }) => {
+export const CircularProgressBar = ({ progress, size = 120, strokeWidth = 10, color = "text-blue-600", trackColor = "text-gray-200", animationDuration = "1s" }) => {
+  const [animatedProgress, setAnimatedProgress] = useState(0);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (progress / 100) * circumference;
+
+  useEffect(() => {
+    // Animate to the target progress
+    setAnimatedProgress(progress);
+  }, [progress]);
+
+  const offset = circumference - (animatedProgress / 100) * circumference;
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
@@ -34,8 +41,12 @@ export const CircularProgressBar = ({ progress, size = 120, strokeWidth = 10, co
           r={radius}
           cx={size / 2}
           cy={size / 2}
+          style={{
+            transition: `stroke-dashoffset ${animationDuration} ease-out` // Apply CSS transition
+          }}
         />
       </svg>
+      {/* Optional: Animate the text as well, or keep it instant */}
       <span className={`absolute text-xl font-bold ${color}`}>{progress}%</span>
     </div>
   );
@@ -71,4 +82,4 @@ export const Button = ({ children, onClick, variant = 'primary', size = 'md', cl
       {children}
     </button>
   );
-}; 
+};
