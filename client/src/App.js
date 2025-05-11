@@ -378,6 +378,8 @@ function App() {
                         else navigateTo('dashboard');
                     } else if (currentView === 'topicView' && selectedCourse) {
                         navigateTo('courseView', { courseId: selectedCourse.id });
+                    } else if (currentView === 'quizHistory' && selectedCourse) {
+                        navigateTo('courseView', { courseId: selectedCourse.id });
                     } else if (currentView === 'courseView' || currentView === 'addCourse') {
                         navigateTo('dashboard');
                     } else {
@@ -390,7 +392,7 @@ function App() {
       </header>
       <main>{renderView()}</main>
       <footer className="text-center mt-12 text-sm text-gray-500 dark:text-gray-400">
-        <p>&copy; {new Date().getFullYear()} LearnSmart AI. Personalized learning journey.</p>
+        <p>&copy; {new Date().getFullYear()} ILM AI. Personalized learning journey.</p>
       </footer>
     </div>
   );
