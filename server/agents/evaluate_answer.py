@@ -6,16 +6,16 @@ from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
+from tools.rag import search_course_content
+
 import logfire
 logfire.configure(token='pylf_v1_eu_W7WPNNgs18K4HcXghtmnzsZ5HdQY1f2ZZkT7pBflsZdt')
-logfire.instrument_pydantic()
 # --- 1. Define Pydantic Models ---
 
 class GradingInput(BaseModel):
     question: str = Field(..., description="The question asked to the student.")
     correct_answer: str = Field(..., description="The ideal or model answer to the question.")
     student_answer: str = Field(..., description="The student's submitted answer.")
-    lecture_notes: str = Field(..., description="Relevant excerpts from lecture notes (retrieved via RAG).")
 
 class GradeOutput(BaseModel):
     assessment: Literal[
@@ -50,8 +50,11 @@ try:
     grading_agent = Agent[GradeOutput]( 
         ollama_llm_model,               
         output_type=GradeOutput,        
-        deps_type=GradingInput          
+        deps_type=GradingInput,
+        tools=[search_course_content]        
     )
+
+    grading_agent.instrument_all()
     
 except Exception as e:
     print(f"Error initializing Ollama LLM or Agent: {e}")
@@ -73,10 +76,7 @@ Correct Answer:
 Student's Answer:
 {student_answer}
 
-Relevant Lecture Notes for Context:
----
-{lecture_notes}
----
+To find the correct answer you can search the course notes/lecture notes to get the relevant information to answer the question.
 
 Instructions for grading:
 1.  Carefully compare the Student's Answer to the Correct Answer.
@@ -111,7 +111,6 @@ async def get_answer_grade(grading_input: GradingInput) -> Optional[GradeOutput]
         question=grading_input.question,
         correct_answer=grading_input.correct_answer,
         student_answer=grading_input.student_answer,
-        lecture_notes=grading_input.lecture_notes
     )
 
     try:
@@ -122,7 +121,7 @@ async def get_answer_grade(grading_input: GradingInput) -> Optional[GradeOutput]
         )
         
         # Access the parsed Pydantic model from the .output attribute
-        parsed_grade_output: GradeOutput = grade_result_container.result
+        parsed_grade_output: GradeOutput = grade_result_container.output
 
         # Now access attributes from the parsed_grade_output (which is of type GradeOutput)
         print(f"Assessment: {parsed_grade_output.assessment}")
@@ -152,26 +151,13 @@ async def get_answer_grade(grading_input: GradingInput) -> Optional[GradeOutput]
 
 async def evaluate_answer(question: str, correct_answer: str, student_answer: str):
 
-    lecture_notes_example = """
-    Lecture Topic: Photosynthesis
-    Key Concepts:
-    1.  Photosynthesis is the process used by plants, algae, and some bacteria to convert light energy into chemical energy, through a process that uses sunlight, water, and carbon dioxide.
-    2.  The primary products are glucose (sugar) and oxygen.
-    3.  Equation: 6CO2 + 6H2O + Light Energy → C6H12O6 + 6O2
-    4.  Chlorophyll is the pigment that absorbs light. It's located in chloroplasts.
-    Common Misconceptions:
-    -   Plants "breathe" CO2 (they take it in for photosynthesis, but respiration involves O2 intake and CO2 release).
-    """
-
     input = GradingInput(
-        question="What are the main inputs and outputs of photosynthesis?",
-        correct_answer="The main inputs are carbon dioxide, water, and light energy. The main outputs are glucose and oxygen.",
-        student_answer="Plants use CO2, water, and sunlight. They make sugar and oxygen.",
-        lecture_notes=lecture_notes_example
+        question=question,
+        correct_answer=correct_answer,
+        student_answer=student_answer,
     )
     await get_answer_grade(input)
 
 
-
-# if __name__ == "__main__":
-    # asyncio.run(evaluate_answer())
+if __name__ == "__main__":
+    asyncio.run(evaluate_answer("Does a gaussian random variable added to a gaussian random variable yield a gaussian random variable?", "Yes", "No"))
