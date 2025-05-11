@@ -639,6 +639,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pydantic-ai", extra = ["logfire"] },
     { name = "pymilvus" },
+    { name = "pypdf2" },
     { name = "python-dotenv" },
     { name = "python-multipart" },
     { name = "requests" },
@@ -656,6 +657,7 @@ requires-dist = [
     { name = "numpy", specifier = "<2" },
     { name = "pydantic-ai", extras = ["logfire"], specifier = ">=0.1.11" },
     { name = "pymilvus", specifier = ">=2.5.3" },
+    { name = "pypdf2", specifier = ">=3.0.1" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "requests", specifier = ">=2.32.3" },
@@ -1579,6 +1581,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3b/64/3bc30ab75104a21b9622915b93ffe42f6d250d5d16113624407fcfd42a12/pymilvus-2.5.8.tar.gz", hash = "sha256:48923e7efeebcc366d32b644772796f60484e0ca1a5afc1606d21a10ed98133c", size = 1260355 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6f/96/2ce2a0b601d95e373897eb2334f83dba615bd5647b0e4908ff30959920d2/pymilvus-2.5.8-py3-none-any.whl", hash = "sha256:6f33c9e78c041373df6a94724c90ca83448fd231aa33d6298a7a84ed2a5a0236", size = 227647 },
+]
+
+[[package]]
+name = "pypdf2"
+version = "3.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/bb/18dc3062d37db6c491392007dfd1a7f524bb95886eb956569ac38a23a784/PyPDF2-3.0.1.tar.gz", hash = "sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440", size = 227419 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/5e/c86a5643653825d3c913719e788e41386bee415c2b87b4f955432f2de6b2/pypdf2-3.0.1-py3-none-any.whl", hash = "sha256:d16e4205cfee272fbdc0568b68d82be796540b1537508cef59388f839c191928", size = 232572 },
 ]
 
 [[package]]
