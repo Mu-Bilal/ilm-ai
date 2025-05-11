@@ -2,9 +2,6 @@ import os
 import dotenv
 from pymilvus import MilvusClient
 
-from pydantic_ai import RunContext
-from dataclasses import dataclass
-
 from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True)
@@ -25,12 +22,11 @@ client = MilvusClient(
 )
 
 
-@dataclass
-class Deps:
-    topic: str
-    mastery_notes: str
+def _clean_text(text: str) -> str:
+    return text.replace("search_document: ", "").strip()
 
-async def search_course_content(ctx: RunContext[Deps], query: str) -> str:
+
+async def search_course_content(query: str) -> str:
     """
     Call this function to get course content related to the query
     """
@@ -48,7 +44,7 @@ async def search_course_content(ctx: RunContext[Deps], query: str) -> str:
 
     debug(res)
 
-    output = [{'distance': hit['distance'], 'text': hit['entity']['text']} for hit in res[0]]
+    output = [{'distance': hit['distance'], 'text': _clean_text(hit['entity']['text'])} for hit in res[0]]
 
     return output
 
@@ -64,9 +60,7 @@ if __name__ == "__main__":
             self.deps = deps
     
     async def main():
-        # Wrap Deps in the DummyRunContext
-        dummy_ctx = DummyRunContext(Deps(topic="normalization", mastery_notes=""))
-        res = await search_course_content(dummy_ctx)
+        res = await search_course_content("normalization")
         print(res)
     
     asyncio.run(main())

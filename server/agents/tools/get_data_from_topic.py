@@ -2,9 +2,6 @@ import os
 import dotenv
 from pymilvus import MilvusClient
 
-from pydantic_ai import RunContext
-from dataclasses import dataclass
-
 from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True)
@@ -27,6 +24,7 @@ client = MilvusClient(
 
 def _clean_text(text: str) -> str:
     return text.replace("search_document: ", "").strip()
+
 
 async def get_data_from_topic(topic: str, mastery_notes: str) -> str:
     """
@@ -53,18 +51,9 @@ async def get_data_from_topic(topic: str, mastery_notes: str) -> str:
 
 if __name__ == "__main__":
     import asyncio
-    from typing import Generic, TypeVar
-    
-    # Create a simplified version of RunContext for testing
-    T = TypeVar('T')
-    class DummyRunContext(Generic[T]):
-        def __init__(self, deps: T):
-            self.deps = deps
-    
+
     async def main():
-        # Wrap Deps in the DummyRunContext
-        dummy_ctx = DummyRunContext(Deps(topic="normalization", mastery_notes=""))
-        res = await get_data_from_topic(dummy_ctx)
+        res = await get_data_from_topic("normalization", "")
         print(res)
     
     asyncio.run(main())
