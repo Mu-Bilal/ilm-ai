@@ -46,10 +46,12 @@ const DashboardView = ({ courses, onNavigate, onAddCourseClick, searchTerm, setS
         <Card key={course.id} className={`hover:shadow-xl transition-shadow cursor-pointer ${course.color} text-black`}>
           <div onClick={() => onNavigate('courseView', { courseId: course.id })}>
             <div className="flex justify-between items-start mb-4">
-                {course.icon || <BookOpen className="w-8 h-8 text-gray-300" />}
+                <div className="flex items-center gap-2">
+                    {<BookOpen className="w-8 h-8 text-blue-500" />}
+                    <h3 className="text-xl font-bold">{course.name}</h3>
+                </div>
                 <span className="text-xs font-semibold bg-white/20 px-2 py-1 rounded-full">{course.topics.length} Topics</span>
             </div>
-            <h3 className="text-xl font-bold mb-2">{course.name}</h3>
             <p className="text-sm opacity-90 mb-4 h-10 overflow-hidden">{course.description}</p>
             <div className="flex items-center justify-between text-sm mb-1">
                 <span>Overall Progress</span>
