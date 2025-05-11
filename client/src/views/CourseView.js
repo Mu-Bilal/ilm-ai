@@ -12,7 +12,6 @@ const CourseView = ({ course, onNavigate, onStartQuiz }) => (
                 <p className="text-gray-600 dark:text-gray-400 mb-4">{course.description || "No description available for this course."}</p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-3">
                     <Button onClick={() => onStartQuiz('personalized', course.id)} icon={Target} className="bg-green-500 hover:bg-green-600 text-white">Personalized Quiz</Button>
-                    <Button onClick={() => onNavigate('progressView', { courseId: course.id })} variant="secondary" icon={BarChart3}>View Full Progress</Button>
                     <Button onClick={() => onNavigate('quizHistory', { courseId: course.id })} variant="secondary" icon={ListChecks}>Quiz History</Button>
                 </div>
             </div>

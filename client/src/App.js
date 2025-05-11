@@ -11,7 +11,6 @@ import AddCourseView from './views/AddCourseView';
 import CourseView from './views/CourseView';
 import TopicView from './views/TopicView';
 import QuizView from './views/QuizView';
-import ProgressView from './views/ProgressView';
 import QuizHistoryView from './views/QuizHistoryView';
 
 // Answer checking function
@@ -91,6 +90,7 @@ function App() {
   const [quizHistory, setQuizHistory] = useState([]);
   const [quizStartTime, setQuizStartTime] = useState(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [isLoadingNotes, setIsLoadingNotes] = useState(false);
 
   // Navigation
   const navigateTo = (view, params = {}) => {
@@ -139,13 +139,9 @@ function App() {
       questions = mockQuizQuestions[`${courseId}_${topicId}`] || [];
       if (type === 'flash') questions = questions.filter(q => q.type === 'recall');
     } else {
-      const course = courses.find(c => c.id === courseId);
-      course?.topics.forEach(topic => {
-        const topicQuestions = mockQuizQuestions[`${courseId}_${topic.id}`];
-        if (topicQuestions && topicQuestions.length > 0) {
-          questions.push(topicQuestions[0]);
-        }
-      });
+      // Get course-level questions instead of iterating through topics
+      questions = mockQuizQuestions[courseId] || [];
+      if (type === 'flash') questions = questions.filter(q => q.type === 'recall');
     }
     
     if (questions.length === 0) {
@@ -257,6 +253,7 @@ function App() {
   
   const handlePersonalizeNotes = async (topic) => {
     setFeedbackMessage(`Personalized notes for "${topic.name}" are being generated based on your weakest points...`);
+    setIsLoadingNotes(true);
     try {
         const response = await fetch('http://localhost:8000/api/personalize-notes', {
             method: 'POST',
@@ -275,10 +272,14 @@ function App() {
         }
 
         const data = await response.json();
-        setFeedbackMessage(data.notes);
+        setSelectedTopic(prev => ({ ...prev, notes: data.notes }));
+        setFeedbackMessage('Personalized notes generated successfully!');
+
     } catch (error) {
         console.error('Error generating personalized notes:', error);
         setFeedbackMessage('Failed to generate personalized notes. Please try again.');
+    } finally {
+        setIsLoadingNotes(false);
     }
   };
 
@@ -309,9 +310,8 @@ function App() {
           onPersonalizeNotes={handlePersonalizeNotes} 
           feedbackMessage={feedbackMessage}
           selectedCourse={selectedCourse}
+          isLoadingNotes={isLoadingNotes}
         /> : <p>Topic not found.</p>;
-      case 'progressView':
-        return selectedCourse ? <ProgressView course={selectedCourse} /> : <p>Course not found.</p>;
       case 'quizHistory':
         return selectedCourse ? <QuizHistoryView 
           course={selectedCourse} 
