@@ -9,7 +9,6 @@ from pydantic_ai.providers.openai import OpenAIProvider
 from tools.rag import search_course_content
 
 import logfire
-logfire.configure(token='pylf_v1_eu_W7WPNNgs18K4HcXghtmnzsZ5HdQY1f2ZZkT7pBflsZdt')
 # --- 1. Define Pydantic Models ---
 
 class GradingInput(BaseModel):
