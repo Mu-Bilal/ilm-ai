@@ -79,7 +79,14 @@ const AddCourseView = ({ onAddCourse, onCancel }) => {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-2xl mx-auto relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-4" />
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">Generating your course...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">This may take a few moments</p>
+        </div>
+      )}
       <h2 className="text-2xl font-semibold mb-6 text-center">Add New Course</h2>
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg">
@@ -179,8 +186,20 @@ const AddCourseView = ({ onAddCourse, onCancel }) => {
         </div>
         <div className="flex justify-end gap-4 pt-4">
           <Button type="button" onClick={onCancel} variant="secondary" disabled={isLoading}>Cancel</Button>
-          <Button type="submit" icon={isLoading ? Loader2 : PlusCircle} disabled={isLoading} className="min-w-[120px]">
-            {isLoading ? 'Creating...' : 'Add Course'}
+          <Button 
+            type="submit" 
+            icon={isLoading ? Loader2 : PlusCircle} 
+            disabled={isLoading} 
+            className={`min-w-[120px] ${isLoading ? 'bg-blue-400 cursor-not-allowed' : ''}`}
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating...
+              </span>
+            ) : (
+              'Add Course'
+            )}
           </Button>
         </div>
       </form>

@@ -2,6 +2,15 @@ import React from 'react';
 import { Lightbulb, HelpCircle, ListChecks, Sparkles, FileText } from 'lucide-react';
 import { Card, Button, CircularProgressBar } from '../components/HelperComponents';
 
+const LoadingSkeleton = () => (
+    <div className="animate-pulse space-y-3">
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-2/3"></div>
+    </div>
+);
+
 const TopicView = ({ 
   topic, 
   courseName, 
@@ -9,7 +18,8 @@ const TopicView = ({
   onStartQuiz, 
   onPersonalizeNotes, 
   feedbackMessage,
-  selectedCourse 
+  selectedCourse,
+  isLoadingNotes = false 
 }) => (
     <div className="space-y-8">
         <Card>
@@ -35,9 +45,23 @@ const TopicView = ({
 
         <Card>
             <h3 className="text-xl font-semibold mb-3">Notes</h3>
-            <Button onClick={() => onPersonalizeNotes(topic)} icon={Sparkles} size="sm" className="mb-4 float-right -mt-2">Personalize Notes</Button>
+            <Button 
+                onClick={() => onPersonalizeNotes(topic)} 
+                icon={Sparkles} 
+                size="sm" 
+                className="mb-4 float-right -mt-2"
+                disabled={isLoadingNotes}
+            >
+                {isLoadingNotes ? 'Generating...' : 'Personalize Notes'}
+            </Button>
             <div className="prose dark:prose-invert max-w-none bg-gray-50 dark:bg-gray-700 p-4 rounded-md min-h-[100px]">
-                {topic.notes ? <p>{topic.notes.split('\n').map((line, i) => <span key={i}>{line}<br/></span>)}</p> : <p className="text-gray-500">No notes available for this topic yet.</p>}
+                {isLoadingNotes ? (
+                    <LoadingSkeleton />
+                ) : topic.notes ? (
+                    <p>{topic.notes.split('\n').map((line, i) => <span key={i}>{line}<br/></span>)}</p>
+                ) : (
+                    <p className="text-gray-500">No notes available for this topic yet.</p>
+                )}
             </div>
         </Card>
 
