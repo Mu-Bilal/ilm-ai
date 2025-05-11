@@ -31,9 +31,9 @@ const CourseView = ({ course, onNavigate, onStartQuiz }) => (
             {course.topics.map(topic => (
             <Card key={topic.id} className="hover:shadow-md transition-shadow">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex-1">
-                    <h4 className="text-xl font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer" onClick={() => onNavigate('topicView', { courseId: course.id, topicId: topic.id })}>{topic.name}</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">{topic.notes || "No notes for this topic yet."}</p>
+                <div className="flex-1 min-w-0">
+                    <h4 className="text-xl font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer truncate" onClick={() => onNavigate('topicView', { courseId: course.id, topicId: topic.id })}>{topic.name}</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{topic.notes || "No notes for this topic yet."}</p>
                 </div>
                 <div className="w-full sm:w-auto flex items-center gap-4 mt-3 sm:mt-0">
                     <div className="w-24 text-right">
