@@ -1,6 +1,7 @@
 import React from 'react';
 import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import { Card, Button } from '../components/HelperComponents';
+import ChatInterface from '../components/ChatInterface';
 
 const QuizView = ({ 
   question, 
@@ -73,6 +74,14 @@ const QuizView = ({
               </p>
             )}
           </div>
+
+          <div className="mt-6">
+            <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Still have questions? Chat with our assistant:
+            </h4>
+            <ChatInterface />
+          </div>
+
           <Button 
             onClick={onNextQuestion} 
             icon={isLastQuestion ? CheckCircle : ArrowLeft} 
