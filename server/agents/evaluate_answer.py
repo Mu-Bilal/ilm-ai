@@ -6,8 +6,10 @@ from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
+import logfire
+logfire.configure(token='pylf_v1_eu_W7WPNNgs18K4HcXghtmnzsZ5HdQY1f2ZZkT7pBflsZdt')
+logfire.instrument_pydantic()
 # --- 1. Define Pydantic Models ---
-
 
 class GradingInput(BaseModel):
     question: str = Field(..., description="The question asked to the student.")
@@ -120,7 +122,7 @@ async def get_answer_grade(grading_input: GradingInput) -> Optional[GradeOutput]
         )
         
         # Access the parsed Pydantic model from the .output attribute
-        parsed_grade_output: GradeOutput = grade_result_container.output
+        parsed_grade_output: GradeOutput = grade_result_container.result
 
         # Now access attributes from the parsed_grade_output (which is of type GradeOutput)
         print(f"Assessment: {parsed_grade_output.assessment}")
@@ -148,7 +150,7 @@ async def get_answer_grade(grading_input: GradingInput) -> Optional[GradeOutput]
 
 # --- 5. Example Usage ---
 
-async def evaluate_answer():
+async def evaluate_answer(question: str, correct_answer: str, student_answer: str):
 
     lecture_notes_example = """
     Lecture Topic: Photosynthesis
@@ -171,5 +173,5 @@ async def evaluate_answer():
 
 
 
-if __name__ == "__main__":
-    asyncio.run(evaluate_answer())
+# if __name__ == "__main__":
+    # asyncio.run(evaluate_answer())
