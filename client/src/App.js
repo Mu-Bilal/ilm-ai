@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, PlusCircle, BookOpen, Target, HelpCircle, FileText, Lightbulb, Sparkles, CheckCircle, XCircle, ArrowLeft, ChevronRight, BarChart3, Edit3, Brain, ListChecks, Search, UploadCloud, Settings, User, Bell } from 'lucide-react';
+import { Home, PlusCircle, BookOpen, Target, HelpCircle, FileText, Lightbulb, Sparkles, CheckCircle, XCircle, ArrowLeft, ChevronRight, BarChart3, Edit3, Brain, ListChecks, Search, UploadCloud } from 'lucide-react';
 import { ProgressBar, CircularProgressBar, Card, Button } from './components/HelperComponents';
 
 // Import mock data
@@ -360,13 +360,6 @@ function App() {
                 }} variant="ghost" size="sm" icon={ArrowLeft}>Back</Button>
             )}
             <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">ILM AI</h1>
-        </div>
-        <div className="flex items-center gap-3">
-            <Button variant="ghost" icon={Bell} className="relative">
-                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900"></span>
-            </Button>
-            <Button variant="ghost" icon={Settings} />
-            <User className="w-8 h-8 text-gray-500 dark:text-gray-400" />
         </div>
       </header>
       <main>{renderView()}</main>
